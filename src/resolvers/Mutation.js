@@ -58,9 +58,36 @@ function post(parent, args, context, info) {
   })
 }
 
+async function unvote(parent, args, context, info) {
+  const userId = getUserId(context)
+  const vote = await context.prisma.votes({
+    where: {
+      AND: [{ link: { id: args.linkId } }, { user: { id: userId } }]
+    }
+  })
+  const voteId = vote[0].id
+
+  /*
+  return context.prisma.updateLink({
+    where: {
+      id: args.linkId
+    },
+    data: {
+      votes: {
+        delete: {
+          id: voteId
+        }
+      }
+    }
+  })
+  */
+  return context.prisma.deleteVote({ id: voteId })
+}
+
 module.exports = {
   signup,
   login,
   post,
-  vote
+  vote,
+  unvote
 }
